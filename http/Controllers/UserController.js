@@ -1,6 +1,7 @@
 const { validationResult } = require("express-validator");
 const User = require("../../Models/Users");
 const jwt = require("jsonwebtoken");
+const bcrypt = require('bcrypt');
 
 const userMasterController = () => {
     return {
@@ -20,9 +21,11 @@ const userMasterController = () => {
                 //creating data object for insertion
                 const { name, password, mobile_number, email, auth_token, refresh_token, referral_code } = req.body
 
+                const hashedPassword = await bcrypt.hash(password, 10);
+
                 const data = {
                     name,
-                    password,
+                    password: hashedPassword,
                     mobile_number,
                     email,
                     auth_token,
