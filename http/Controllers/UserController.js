@@ -60,8 +60,10 @@ const userMasterController = () => {
                     where: { mobile_number, deleted_at: null },
                 });
 
-                if (!user) return res.status(400).json({ success: false, message: "You have not registered with the mobile number.please register first" });
-                if (user.dataValues.password != password) return res.status(400).json({ success: false, message: "Please enter correct password!" });
+                if (!user) return res.status(400).json({ success: false, message: "You have not registered with the mobile number.Please register first" });
+
+                const isPasswordMatch = await bcrypt.compare(password, user.dataValues.password);
+                if (!isPasswordMatch) return res.status(400).json({ success: false, message: "Please enter correct password!" });
 
                 const data = {
                     user: {
