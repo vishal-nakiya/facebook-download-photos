@@ -2,6 +2,8 @@ const { validationResult } = require("express-validator");
 const User = require("../../Models/Users");
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
+const WalletBalance = require("../../Models/WalletBalance");
+const Sequelize = require('sequelize');
 
 const userMasterController = () => {
     return {
@@ -31,6 +33,7 @@ const userMasterController = () => {
                     auth_token,
                     refresh_token,
                     referral_code,
+                    status: 1
                 }
 
                 const user = await User.create(data);
@@ -114,12 +117,13 @@ const userMasterController = () => {
                     })
                 }
                 //creating data object for insertion
-                const { name, password, mobile_number, email, auth_token, refresh_token, referral_code } = req.body
+                const { name, password, mobile_number, email, auth_token, refresh_token, referral_code, status } = req.body
 
                 const data = {
                     name,
                     mobile_number,
                     email,
+                    status
                 }
 
                 const user = await User.update(data, {
@@ -141,19 +145,47 @@ const userMasterController = () => {
                     where: {
                         deleted_at: null
                     },
-                    attributes: {
-                        exclude: ["deleted_at", "auth_token", "refresh_token"],
-                    },
+                    attributes: ["id", "name", "mobile_number", "email", "referral_code", "referral_points", "status"],
+                    include: [
+                        {
+                            model: WalletBalance,
+                            as: "balanceDetails",
+                            attributes: ["id", "running_balance"],
+                            required: false,
+                        }
+                    ],
+                    order: [
+                        [Sequelize.literal('`balanceDetails`.`id` DESC')]
+                    ],
                 })
                 if (!mydata.length) return res.status(400).json({
                     success: false,
                     message: "No user data found!",
                 });
+
+                const modifiedData = mydata.map(userdata => {
+                    if (userdata.balanceDetails && userdata.balanceDetails.length > 0) {
+                        const maxBalance = userdata.balanceDetails[0].running_balance;
+                        return {
+                            ...userdata.toJSON(),
+                            running_balance: maxBalance,
+                            balanceDetails: undefined,
+                        };
+                    } else {
+                        return {
+                            ...userdata.toJSON(),
+                            running_balance: null,
+                            balanceDetails: undefined,
+                        };
+                    }
+                });
+
+
                 //FINALLY, Sending data in response
                 res.status(200).json({
                     success: true,
                     message: "User data fetch succesfully",
-                    data: mydata,
+                    data: modifiedData,
                 })
             } catch (error) {
                 console.log(error);
@@ -167,9 +199,7 @@ const userMasterController = () => {
                         deleted_at: null,
                         id: req.params.id
                     },
-                    attributes: {
-                        exclude: ["deleted_at", "auth_token", "refresh_token"],
-                    },
+                    attributes: ["id", "name", "mobile_number", "email", "referral_code", "referral_points", "status"]
                 })
                 if (!mydata) return res.status(400).json({
                     success: false,
