@@ -34,7 +34,7 @@ const userMasterController = () => {
                 }
 
                 const user = await User.create(data);
-                return res.status(500).json({ success: true, message: "User Created Succesfully"});
+                return res.status(200).json({ success: true, message: "User Created Succesfully"});
                 
             } catch (error) {
                 console.log(error);
