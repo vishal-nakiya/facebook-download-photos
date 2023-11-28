@@ -165,7 +165,7 @@ const userMasterController = () => {
 
                 const modifiedData = mydata.map(userdata => {
                     if (userdata.balanceDetails && userdata.balanceDetails.length > 0) {
-                        const maxBalance = userdata.balanceDetails[0].running_balance;
+                        const maxBalance = parseFloat(userdata.balanceDetails[0].running_balance);
                         return {
                             ...userdata.toJSON(),
                             running_balance: maxBalance,
