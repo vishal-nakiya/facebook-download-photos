@@ -2,6 +2,7 @@ const { validationResult } = require("express-validator");
 const WalletBalance = require("../../Models/WalletBalance");
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
+const sequelize = require("../../config/dbconfig");
 
 const WalletBalanceController = () => {
     return {
@@ -44,22 +45,24 @@ const WalletBalanceController = () => {
         },
         ReadAmountrequest: async (req, res) => {
             try {
-                const mydata = await Balance.findOne({
+                const mydata = await WalletBalance.findAll({
                     where: {
+                        id: sequelize.literal(`(id, user_id) IN (SELECT MAX(id), user_id FROM wallet_balances GROUP BY user_id)`),
                         deleted_at: null,
                     },
                     attributes: {
-                        exclude: ["deleted_at", "auth_token", "refresh_token"],
+                        exclude: ["deleted_at"],
                     },
+                    group: ['user_id'],
                 })
-                if (!mydata) return res.status(400).json({
+                if (!mydata.length) return res.status(400).json({
                     success: false,
-                    message: "No user data found!",
+                    message: "No wallet data found!",
                 });;
                 //FINALLY, Sending data in response
                 res.status(200).json({
                     success: true,
-                    message: "User data fetch succesfully",
+                    message: "Wallet data fetch succesfully",
                     data: mydata,
                 })
             } catch (error) {

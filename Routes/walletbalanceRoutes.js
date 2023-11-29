@@ -8,6 +8,8 @@ const { check } = require('express-validator');
 Router.post('/amount/request', authMiddleware, [
     check("user_id").exists().withMessage("Enter user_id"),
 ],
-WalletBalanceController().AmountRequest);
+    WalletBalanceController().AmountRequest);
+
+Router.get('/request/list', authMiddleware, WalletBalanceController().ReadAmountrequest);
 
 module.exports = Router;
