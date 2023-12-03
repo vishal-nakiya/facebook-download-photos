@@ -102,6 +102,35 @@ const WithdrawRequestController = () => {
                 res.status(500).json({ success: false, message: "Internal Server error", });
             }
         },
+        RequestsReject: async (req, res) => {
+            try {
+                const WithdrawRequestData = await WithdrawRequest.findOne({
+                    where: {
+                        deleted_at: null,
+                        id: req.body.withdraw_request_id
+                    },
+                })
+                if (!WithdrawRequestData) return res.status(400).json({
+                    success: false,
+                    message: "No request data found!",
+                });
+
+                const updatewithdrawrequest = await WithdrawRequest.update({ accept_decline: 0 }, {
+                    where: {
+                        deleted_at: null,
+                        id: req.body.withdraw_request_id
+                    },
+                })
+                //FINALLY, Sending data in response
+                res.status(200).json({
+                    success: true,
+                    message: "Request reject",
+                })
+            } catch (error) {
+                console.log(error);
+                res.status(500).json({ success: false, message: "Internal Server error", });
+            }
+        },
     }
 };
 
