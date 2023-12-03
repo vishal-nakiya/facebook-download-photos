@@ -31,7 +31,7 @@ const BidController = () => {
           attributes: ["id", "start_time", "end_time"]
         })
         const data = {
-          user_id: req.body.user_id,
+          user_id: req.user.id,
           zodiac_id: req.body.zodiac_id,
           bid_amount: req.body.bid_amount,
           time_slot_id: timeSlotdata.dataValues.id,
