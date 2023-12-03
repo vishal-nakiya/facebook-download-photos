@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../config/dbconfig");
+const User = require("./Users");
 
 const WithdrawRequest = sequelize.define("withdraw_requests", {
     id: { type: Sequelize.INTEGER(11).UNSIGNED, autoIncrement: true, allowNull: false, primaryKey: true, },
@@ -18,6 +19,8 @@ const WithdrawRequest = sequelize.define("withdraw_requests", {
         }
     }
 );
+
+WithdrawRequest.belongsTo(User, { foreignKey: "user_id", as: "userDetails" });
 
 
 module.exports = WithdrawRequest;

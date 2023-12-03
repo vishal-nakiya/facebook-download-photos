@@ -8,7 +8,7 @@ const User = sequelize.define("users", {
     password: { type: Sequelize.STRING(100), allowNull: false },
     mobile_number: { type: Sequelize.STRING(50), allowNull: false },
     email: { type: Sequelize.STRING(50), allowNull: false },
-    is_admin: { type: Sequelize.TINYINT(4), allowNull: true },
+    is_admin: { type: Sequelize.TINYINT(4), allowNull: false },
     auth_token: { type: Sequelize.STRING(10000), allowNull: this.truncate },
     refresh_token: { type: Sequelize.STRING(10000), allowNull: this.truncate },
     referral_code: { type:Sequelize.STRING, allowNull:true },

@@ -1,3 +1,4 @@
+const User = require("../../Models/Users");
 const WalletBalance = require("../../Models/WalletBalance");
 const WithdrawRequest = require("../../Models/WithdrawRequest");
 const { validationResult } = require("express-validator");
@@ -41,18 +42,33 @@ const WithdrawRequestController = () => {
                         accept_decline: null
                     },
                     attributes: {
-                        exclude: ["deleted_at", "auth_token", "refresh_token"],
+                        include: ["id", "request_amount", "accept_decline"]
                     },
+                    include: [
+                        {
+                            model: User,
+                            as: "userDetails",
+                            attributes: ["id", "name", "mobile_number", "email"],
+                        }
+                    ]
                 })
                 if (!mydata.length) return res.status(400).json({
                     success: false,
                     message: "No request found!",
-                });
+                });     
+                
+                const modifiedData = mydata.map(item => ({
+                    id: item.id,
+                    request_amount: item.request_amount,
+                    accept_decline: item.accept_decline,
+                    ...item.userDetails?.toJSON(),
+                }));
+
                 //FINALLY, Sending data in response
                 res.status(200).json({
                     success: true,
                     message: "Request data fetch succesfully",
-                    data: mydata,
+                    data: modifiedData,
                 })
             } catch (error) {
                 console.log(error);
