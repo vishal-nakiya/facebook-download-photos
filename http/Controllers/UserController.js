@@ -34,7 +34,7 @@ const userMasterController = () => {
                     refresh_token,
                     referral_code,
                     status: 1,
-                    is_admin: 1
+                    is_admin: 0
                 }
 
                 const user = await User.create(data);
