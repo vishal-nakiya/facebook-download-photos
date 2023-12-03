@@ -33,7 +33,8 @@ const userMasterController = () => {
                     auth_token,
                     refresh_token,
                     referral_code,
-                    status: 1
+                    status: 1,
+                    is_admin: 1
                 }
 
                 const user = await User.create(data);
@@ -59,7 +60,7 @@ const userMasterController = () => {
                 }
                 const { mobile_number, password } = req.body;
                 let user = await User.findOne({
-                    attributes: ['id', 'name', 'email', 'password',],
+                    attributes: ['id', 'name', 'email', 'password','is_admin'],
                     where: { mobile_number, deleted_at: null },
                 });
 
@@ -84,6 +85,7 @@ const userMasterController = () => {
                         authToken,
                         refreshToken,
                         id: user.dataValues.id,
+                        is_admin: user.dataValues.is_admin
                     }
                 });
 
