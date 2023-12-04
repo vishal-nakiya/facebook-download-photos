@@ -322,7 +322,7 @@ const BidController = () => {
 
         res.status(200).json({
           success: true,
-          message: 'Winner data fetched succesfully',
+          message: 'Data fetched succesfully',
           data: Bidwinnerdata
         });
       } catch (error) {
