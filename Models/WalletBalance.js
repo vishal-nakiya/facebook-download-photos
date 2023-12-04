@@ -7,6 +7,7 @@ const WalletBalance = sequelize.define("wallet_balances", {
     debit_credit: { type: Sequelize.TINYINT(4), allowNull: true },
     amount: { type: Sequelize.DECIMAL(15, 2), allowNull: true },
     running_balance: { type: Sequelize.DECIMAL(15, 2), allowNull: true },
+    comment: { type: Sequelize.STRING, allowNull: true },
     deleted_at: { type: Sequelize.STRING, allowNull: true },
 },
     {

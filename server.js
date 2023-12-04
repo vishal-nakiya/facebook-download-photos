@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+require("./cron");
 const port = process.env.PORT || 8000;
 const cookieParser = require("cookie-parser");
 const Routes = require('./Routes/index');

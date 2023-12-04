@@ -36,7 +36,7 @@ const WalletBalanceController = () => {
                 }
 
                 const balance = await WalletBalance.create(data);
-                return res.status(200).json({ success: true, message: "Balance request Created Succesfully" });
+                return res.status(200).json({ success: true, message: "Balance added Succesfully" });
 
             } catch (error) {
                 console.log(error);

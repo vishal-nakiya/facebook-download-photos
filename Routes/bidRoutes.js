@@ -7,5 +7,7 @@ Router.post('/create', authMiddleware, BidController().AddBidAmount);
 
 Router.get('/winner/list', authMiddleware, BidController().readBidAmount);
 
+Router.post('/winner/manually', authMiddleware, BidController().createManuallyWinner);
+
 
 module.exports = Router;
