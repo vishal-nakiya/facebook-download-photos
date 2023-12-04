@@ -10,7 +10,7 @@ const authMiddleware = async (req, res, next) => {
             const data = jwt.verify(token, process.env.JWT_SECRET);
             const userData = await User.findByPk(data.user.id);
             if (!userData || userData.auth_token != token) {
-                return res.status(440).json({
+                return res.status(401).json({
                     message: "Session expired. Please login again.",
                     success: false,
                 });
