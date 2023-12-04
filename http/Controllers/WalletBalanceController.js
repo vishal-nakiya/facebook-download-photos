@@ -70,6 +70,32 @@ const WalletBalanceController = () => {
                 res.status(500).json({ success: false, message: "Internal Server error", });
             }
         },
+        ReadperticularuserTotalbid: async (req, res) => {
+            try {
+                const mydata = await WalletBalance.findAll({
+                    where: {
+                        id: sequelize.literal(`(id, user_id) IN (SELECT MAX(id), user_id FROM wallet_balances GROUP BY user_id)`),
+                        deleted_at: null,
+                        user_id: req.user.id
+                    },
+                    attributes: ["id", "user_id", "running_balance"],
+                    group: ['user_id'],
+                })
+                if (!mydata.length) return res.status(400).json({
+                    success: false,
+                    message: "No wallet data found!",
+                });;
+                //FINALLY, Sending data in response
+                res.status(200).json({
+                    success: true,
+                    message: "Wallet data fetch succesfully",
+                    data: mydata,
+                })
+            } catch (error) {
+                console.log(error);
+                res.status(500).json({ success: false, message: "Internal Server error", });
+            }
+        },
     }
 };
 

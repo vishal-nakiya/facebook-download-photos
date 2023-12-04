@@ -9,5 +9,6 @@ Router.get('/winner/list', authMiddleware, BidController().readBidAmount);
 
 Router.post('/winner/manually', authMiddleware, BidController().createManuallyWinner);
 
+Router.get('/list/userbid', authMiddleware, BidController().readperticularUserBidAmount);
 
 module.exports = Router;
