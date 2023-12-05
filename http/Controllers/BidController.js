@@ -4,7 +4,9 @@ const TimeSlot = require("../../Models/TimeSlot");
 const WinnerZodiac = require("../../Models/WinnerZodiac");
 const WalletBalance = require("../../Models/WalletBalance");
 const WinnerManually = require("../../Models/WinnerManually");
-
+const Zodiac = require("../../Models/Zodiac");
+const fs = require('fs');
+const path = require('path');
 const BidController = () => {
   return {
     AddBidAmount: async (req, res) => {
@@ -318,8 +320,35 @@ const BidController = () => {
             'date'
           ],
           order: [[Sequelize.literal('total_bid_amount'), 'DESC']],
+          include: [
+            {
+              model: Zodiac,
+              as: "Zodiacdetails",
+              attributes: ["id",
+                "name",
+                "status",
+                "order",
+                "image"],
+              required: false,
+            }
+          ]
         })
-
+        if (!Bidwinnerdata.length) {
+          return res.status(400).json({
+            success: false,
+            message: 'No data found!',
+          });
+        }
+        const baseDirectory = process.cwd();
+        for (const x of Bidwinnerdata) {
+          if (x.dataValues.Zodiacdetails) {
+            const imagePath = path.join(baseDirectory, 'http', 'images', x.dataValues.Zodiacdetails.dataValues.image);
+            if (fs.existsSync(imagePath)) {
+              const imageStream = fs.createReadStream(imagePath);
+              x.dataValues.Zodiacdetails.dataValues.image = imageStream.path
+            }
+          }
+        }
         res.status(200).json({
           success: true,
           message: 'Data fetched succesfully',

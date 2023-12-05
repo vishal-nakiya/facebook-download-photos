@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../config/dbconfig");
+const Zodiac = require("./Zodiac");
 
 const Bid = sequelize.define("bids", {
     id: { type: Sequelize.INTEGER(11).UNSIGNED, autoIncrement: true, allowNull: false, primaryKey: true, },
@@ -20,6 +21,8 @@ const Bid = sequelize.define("bids", {
         }
     }
 );
+
+Bid.belongsTo(Zodiac, { foreignKey: "zodiac_id", as: "Zodiacdetails" });
 
 
 module.exports = Bid;
