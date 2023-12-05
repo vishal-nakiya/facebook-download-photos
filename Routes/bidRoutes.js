@@ -5,7 +5,7 @@ const authMiddleware = require('../http/middlewares/authMiddleware');
 
 Router.post('/create', authMiddleware, BidController().AddBidAmount);
 
-Router.get('/winner/list', authMiddleware, BidController().readBidAmount);
+Router.get('/winner/list', authMiddleware, BidController().bidCronscript);
 
 Router.post('/winner/manually', authMiddleware, BidController().createManuallyWinner);
 

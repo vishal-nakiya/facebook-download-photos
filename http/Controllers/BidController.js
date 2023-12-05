@@ -120,7 +120,7 @@ const BidController = () => {
     //     res.status(400).json({ message: 'Bad request', success: false });
     //   }
     // },
-    readBidAmount: async (req, res) => {
+    bidCronscript: async (req, res) => {
       try {
         const currentDate = new Date();
         const hours = currentDate.getHours();
