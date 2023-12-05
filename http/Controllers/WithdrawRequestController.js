@@ -42,13 +42,14 @@ const WithdrawRequestController = () => {
                         accept_decline: null
                     },
                     attributes: {
-                        include: ["id", "request_amount", "accept_decline"]
+                        include: ["id", "request_amount", "accept_decline"],
+                        exclude: ["deleted_at"]
                     },
                     include: [
                         {
                             model: User,
                             as: "userDetails",
-                            attributes: ["id", "name", "mobile_number", "email"],
+                            attributes: ["id", "name", "mobile_number", "email", "status"],
                         }
                     ]
                 })
@@ -57,18 +58,18 @@ const WithdrawRequestController = () => {
                     message: "No request found!",
                 });     
                 
-                const modifiedData = mydata.map(item => ({
-                    id: item.id,
-                    request_amount: item.request_amount,
-                    accept_decline: item.accept_decline,
-                    ...item.userDetails?.toJSON(),
-                }));
+                // const modifiedData = mydata.map(item => ({
+                //     id: item.id,
+                //     request_amount: item.request_amount,
+                //     accept_decline: item.accept_decline,
+                //     ...item.userDetails?.toJSON(),
+                // }));
 
                 //FINALLY, Sending data in response
                 res.status(200).json({
                     success: true,
                     message: "Request data fetch succesfully",
-                    data: modifiedData,
+                    data: mydata,
                 })
             } catch (error) {
                 console.log(error);
@@ -94,11 +95,16 @@ const WithdrawRequestController = () => {
                     },
                     order: [["id", "DESC"]]
                 })
+                if (!walletdataget) return res.status(400).json({
+                    success: false,
+                    message: "No wallet data found!",
+                });
                 const data = {
                     user_id: WithdrawRequestData.dataValues.user_id,
                     debit_credit: 0,
                     amount: parseFloat(WithdrawRequestData.dataValues.request_amount),
-                    running_balance: parseFloat(walletdataget.dataValues.running_balance) - parseFloat(WithdrawRequestData.dataValues.request_amount)
+                    running_balance: parseFloat(walletdataget.dataValues.running_balance) - parseFloat(WithdrawRequestData.dataValues.request_amount),
+                    comment: "Withdraw"
                 }
                 const walletdatacreate = await WalletBalance.create(data);
 
