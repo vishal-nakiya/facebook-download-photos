@@ -1,6 +1,6 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../config/dbconfig");
-const Bid = require("./Bids");
+// const Bid = require("./Bids");
 const zodiacController = require("../http/Controllers/zodiacController");
 
 const Zodiac = sequelize.define("zodiacs", {
