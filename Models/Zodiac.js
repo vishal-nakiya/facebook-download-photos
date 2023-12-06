@@ -1,7 +1,5 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../config/dbconfig");
-// const Bid = require("./Bids");
-const zodiacController = require("../http/Controllers/zodiacController");
 
 const Zodiac = sequelize.define("zodiacs", {
     id: { type: Sequelize.INTEGER(11).UNSIGNED, autoIncrement: true, allowNull: false, primaryKey: true, },
@@ -21,6 +19,5 @@ const Zodiac = sequelize.define("zodiacs", {
     }
 );
 
-// Zodiac.hasMany(Bid, { foreignKey: "zodiac_id", as: "Zodiacdetails" });
 
 module.exports = Zodiac;
