@@ -18,7 +18,7 @@ const authMiddleware = async (req, res, next) => {
             req.user = userData.dataValues;
             next();
         } catch (error) {
-            res.status(400).json({
+            res.status(401).json({
                 message: "Session expired. Please login again.",
                 success: false,
             });
@@ -26,7 +26,7 @@ const authMiddleware = async (req, res, next) => {
                 
         }
     } else {
-        res.status(400).json({
+        res.status(401).json({
             message: "Session expired. Please login again.",
             success: false,
         });
