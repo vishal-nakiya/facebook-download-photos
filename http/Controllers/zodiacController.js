@@ -56,16 +56,14 @@ const zodiacController = () => {
                   "image"
                 ],
               });
-              const baseDirectory = process.cwd();
+              const imageBaseUrl = 'http://localhost:8000/images';
+
               for (const x of mydata) {
-                const imagePath = path.join(baseDirectory, 'http', 'images', x.dataValues.image);
+                const imagePath = path.join('http', 'images', x.dataValues.image);
+          
                 if (fs.existsSync(imagePath)) {
-                  const imageStream = fs.createReadStream(imagePath);
-                  x.dataValues.image = imageStream.path
+                  x.dataValues.image = `${imageBaseUrl}/${x.dataValues.image}`;
                 }
-              }
-              if (!mydata) {
-                return res.status(502).json({ message: "No data found", success: false });
               }
       
               res.status(200).json({

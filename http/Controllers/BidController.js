@@ -342,12 +342,14 @@ const BidController = () => {
           });
         }
         const baseDirectory = process.cwd();
-        for (const x of Bidwinnerdata) {
-          const imagePath = path.join(baseDirectory, 'http', 'images', x.dataValues.image);
-            if (fs.existsSync(imagePath)) {
-              const imageStream = fs.createReadStream(imagePath);
-              x.dataValues.image = imageStream.path
-            }
+        const imageBaseUrl = 'http://localhost:8000/images';
+
+    for (const x of Bidwinnerdata) {
+      const imagePath = path.join(baseDirectory, 'http', 'images', x.dataValues.image);
+
+      if (fs.existsSync(imagePath)) {
+        x.dataValues.image = `${imageBaseUrl}/${x.dataValues.image}`;
+      }
           x.dataValues.bid_amount = 0
           if (x.dataValues.Biddetails.length) {
             x.dataValues.bid_amount = x.dataValues.Biddetails.reduce((acc, curr) => +acc + +curr.bid_amount, 0)
