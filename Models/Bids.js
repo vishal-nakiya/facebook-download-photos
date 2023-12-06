@@ -23,6 +23,7 @@ const Bid = sequelize.define("bids", {
 );
 
 Bid.belongsTo(Zodiac, { foreignKey: "zodiac_id", as: "Zodiacdetails" });
+Zodiac.hasMany(Bid, { foreignKey: "zodiac_id", as: "Biddetails" });
 
 
 module.exports = Bid;

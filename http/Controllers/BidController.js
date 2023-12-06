@@ -305,30 +305,32 @@ const BidController = () => {
           },
           attributes: ["id", "start_time", "end_time"]
         })
-        const Bidwinnerdata = await Bid.findAll({
+        console.log(timeSlotdata.dataValues.id, "----id--time-slot");
+        const Bidwinnerdata = await Zodiac.findAll({
           where: {
             deleted_at: null,
-            date: formattedDate,
-            time_slot_id: timeSlotdata.dataValues.id,
-            user_id: req.user.id,
           },
-          group: ["zodiac_id", "time_slot_id"],
-          attributes: [
-            'zodiac_id',
-            'time_slot_id',
-            [Sequelize.literal('SUM(bid_amount)'), 'total_bid_amount'],
-            'date'
-          ],
-          order: [[Sequelize.literal('total_bid_amount'), 'DESC']],
+          attributes: ["id", "image", "name",
+            "status",
+            "order"],
+          // group: ["Biddetails.zodiac_id", "Biddetails.time_slot_id"],
           include: [
             {
-              model: Zodiac,
-              as: "Zodiacdetails",
-              attributes: ["id",
-                "name",
-                "status",
-                "order",
-                "image"],
+              model: Bid,
+              as: "Biddetails",
+              where: {
+                deleted_at: null,
+                date: formattedDate,
+                time_slot_id: timeSlotdata.dataValues.id,
+                user_id: req.user.id,
+              },
+              attributes: [
+                'zodiac_id',
+                'time_slot_id',
+                'bid_amount',
+                // [Sequelize.literal('SUM(bid_amount)'), 'total_bid_amount'],
+                'date'
+              ],
               required: false,
             }
           ]
@@ -341,13 +343,16 @@ const BidController = () => {
         }
         const baseDirectory = process.cwd();
         for (const x of Bidwinnerdata) {
-          if (x.dataValues.Zodiacdetails) {
-            const imagePath = path.join(baseDirectory, 'http', 'images', x.dataValues.Zodiacdetails.dataValues.image);
+          const imagePath = path.join(baseDirectory, 'http', 'images', x.dataValues.image);
             if (fs.existsSync(imagePath)) {
               const imageStream = fs.createReadStream(imagePath);
-              x.dataValues.Zodiacdetails.dataValues.image = imageStream.path
+              x.dataValues.image = imageStream.path
             }
+          if (x.dataValues.Biddetails.length) {
+            x.dataValues.bid_amount = x.dataValues.Biddetails.reduce((acc, curr) => +acc + +curr.bid_amount, 0)
+            delete x.dataValues.Biddetails
           }
+
         }
         res.status(200).json({
           success: true,
