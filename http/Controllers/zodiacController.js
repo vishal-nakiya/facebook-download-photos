@@ -143,7 +143,7 @@ const zodiacController = () => {
               const mydata = await Zodiac.destroy({ where: { id: id } });
 
               res
-                .status(500)
+                .status(200)
                 .json({ message: "Data deleted successfully", success: true });
             } catch (error) {
                 console.log(error);
