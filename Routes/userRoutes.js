@@ -53,9 +53,9 @@ Router.post("/login", [
     userController().Userlogin);
 
 Router.put('/update/:id', authMiddleware, [
-    body("name").trim().isLength({ min: 1 }).withMessage('Please enter full name'),
-    body("mobile_number").trim().isLength({ min: 1 }).withMessage('Please enter mobile number'),
-    body("email").trim().isLength({ min: 1 }).withMessage('Please enter email'),
+    // body("name").trim().isLength({ min: 1 }).withMessage('Please enter full name'),
+    // body("mobile_number").trim().isLength({ min: 1 }).withMessage('Please enter mobile number'),
+    // body("email").trim().isLength({ min: 1 }).withMessage('Please enter email'),
     // body("mobile_number").custom((value, { req, loc, path }) => {
     //     if (!value) {
     //         return Promise.reject("Enter phone number")
