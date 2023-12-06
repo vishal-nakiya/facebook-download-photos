@@ -119,12 +119,9 @@ const userMasterController = () => {
                     })
                 }
                 //creating data object for insertion
-                const { name, password, mobile_number, email, auth_token, refresh_token, referral_code, status } = req.body
+                const { status } = req.body
 
                 const data = {
-                    name,
-                    mobile_number,
-                    email,
                     status
                 }
 
