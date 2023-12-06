@@ -348,10 +348,11 @@ const BidController = () => {
               const imageStream = fs.createReadStream(imagePath);
               x.dataValues.image = imageStream.path
             }
+          x.dataValues.bid_amount = 0
           if (x.dataValues.Biddetails.length) {
             x.dataValues.bid_amount = x.dataValues.Biddetails.reduce((acc, curr) => +acc + +curr.bid_amount, 0)
-            delete x.dataValues.Biddetails
           }
+          delete x.dataValues.Biddetails
 
         }
         res.status(200).json({
