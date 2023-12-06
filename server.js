@@ -14,6 +14,8 @@ app.use(express.json({
 app.use(cookieParser());
 //app.set('trust proxy', true);
 // Capture 500 errors
+app.use('/images', express.static('http/images'));
+
 app.use((error, req, res, next) => {
     res.status(500).send("Could not perform the action");
 });
