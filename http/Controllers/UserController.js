@@ -133,7 +133,7 @@ const userMasterController = () => {
                         id: req.params.id
                     }
                 });
-                return res.status(500).json({ success: true, message: "User updated Succesfully" });
+                return res.status(200).json({ success: true, message: "User updated Succesfully" });
 
             } catch (error) {
                 console.log(error);
