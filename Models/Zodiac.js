@@ -5,8 +5,8 @@ const Zodiac = sequelize.define("zodiacs", {
     id: { type: Sequelize.INTEGER(11).UNSIGNED, autoIncrement: true, allowNull: false, primaryKey: true, },
     name: { type: Sequelize.STRING(50), allowNull: false },
     status: { type: Sequelize.TINYINT(4), allowNull: false },
-    order: { type: Sequelize.TINYINT(4), allowNull: false },
-    image: { type: Sequelize.STRING(200), allowNull: false },
+    order: { type: Sequelize.INTEGER, allowNull: true },
+    image: {  type: Sequelize.STRING(200), allowNull: true },
     deleted_at: { type: Sequelize.STRING, allowNull: true },
 },
     {
