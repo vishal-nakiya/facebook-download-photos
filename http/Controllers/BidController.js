@@ -309,6 +309,7 @@ const BidController = () => {
         const Bidwinnerdata = await Zodiac.findAll({
           where: {
             deleted_at: null,
+            status: 1
           },
           attributes: ["id", "image", "name",
             "status",
