@@ -39,7 +39,6 @@ const WithdrawRequestController = () => {
                 const mydata = await WithdrawRequest.findAll({
                     where: {
                         deleted_at: null,
-                        accept_decline: null
                     },
                     attributes: {
                         include: ["id", "request_amount", "accept_decline"],
