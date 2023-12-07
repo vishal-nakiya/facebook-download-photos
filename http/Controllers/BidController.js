@@ -368,6 +368,102 @@ const BidController = () => {
         res.status(400).json({ message: 'Bad request', success: false });
       }
     },
+    biddingList: async (req, res) => {
+      try {
+        const currentDate = new Date();
+        const hours = currentDate.getHours();
+        const minutes = currentDate.getMinutes();
+        const seconds = currentDate.getSeconds();
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+    
+        const formattedDate = `${year}-${month}-${day}`;
+    
+  
+        const formattedHours = hours < 10 ? '0' + hours : hours;
+        const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+        const formattedSeconds = seconds < 10 ? '0' + seconds : seconds;
+    
+        const currentTime = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+    
+        const timeSlotdata = await TimeSlot.findOne({
+          where: {
+            start_time: { [Op.lte]: currentTime },
+            end_time: { [Op.gt]: currentTime },
+          },
+          attributes: ["id", "start_time", "end_time"]
+        });
+        console.log(timeSlotdata.dataValues.id, "----id--time-slot");
+    
+        const Bidwinnerdata = await Zodiac.findAll({
+          where: {
+            deleted_at: null,
+            status: 1
+          },
+          attributes: ["id", "image", "name", "status", "order"],
+          include: [
+            {
+              model: Bid,
+              as: "Biddetails",
+              where: {
+                deleted_at: null,
+                date: formattedDate,
+                time_slot_id: timeSlotdata.dataValues.id,
+              },
+              attributes: [
+                'zodiac_id',
+                'time_slot_id',
+                'bid_amount',
+                'date',
+                'created_at'
+              ],
+              required: false,
+            }
+          ]
+        });
+    
+        if (!Bidwinnerdata.length) {
+          return res.status(400).json({
+            success: false,
+            message: 'No data found!',
+          });
+        }
+    
+        const baseDirectory = process.cwd();
+        const imageBaseUrl = 'http://localhost:8000/images';
+    
+        for (const x of Bidwinnerdata) {
+          const imagePath = path.join(baseDirectory, 'http', 'images', x.dataValues.image);
+    
+          if (fs.existsSync(imagePath)) {
+            x.dataValues.image = `${imageBaseUrl}/${x.dataValues.image}`;
+          }
+          x.dataValues.bid_amount = 0;
+    
+          if (x.dataValues.Biddetails.length) {
+            x.dataValues.bid_amount = x.dataValues.Biddetails.reduce((acc, curr) => +acc + +curr.bid_amount, 0);
+          }
+        }
+    
+        const lowestBidObject = Bidwinnerdata.reduce((min, current) => (min.dataValues.bid_amount < current.dataValues.bid_amount ? min : current));
+    
+        Bidwinnerdata.forEach((item) => {
+          item.dataValues.is_win = item === lowestBidObject ? 1 : 0;
+          delete item.dataValues.Biddetails;
+        });
+    
+        res.status(200).json({
+          success: true,
+          message: 'Data fetched successfully',
+          data: Bidwinnerdata
+        });
+      } catch (error) {
+        console.log(error);
+        res.status(400).json({ message: 'Bad request', success: false });
+      }
+    },
+    
   }
 };
 
