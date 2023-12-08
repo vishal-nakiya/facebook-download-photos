@@ -103,14 +103,15 @@ const WalletBalanceController = () => {
                 const mydata = await User.findAll({
                     where: {
                         deleted_at: null,
-                        status: 1
+                        status: 1,
+                        id: req.user.id
                     },
                     attributes: ["id", "name", "mobile_number"],
                     include: [
                         {
                             model: WalletBalance,
                             as: "balanceDetails",
-                            attributes: ["id", "amount", "debit_credit"],
+                            attributes: ["id", "amount", "debit_credit", "created_at"],
                             required: false,
                         }
                     ],
@@ -128,11 +129,19 @@ const WalletBalanceController = () => {
                         for (const y of x.dataValues.balanceDetails) {
                             const isDebit = y.dataValues.debit_credit === 0;
                             const signedAmount = isDebit ? -y.dataValues.amount : y.dataValues.amount;
+                            const inputDate = new Date(y.dataValues.created_at);
+                            const year = inputDate.getFullYear();
+                            const month = String(inputDate.getMonth() + 1).padStart(2, '0');
+                            const day = String(inputDate.getDate()).padStart(2, '0');
 
+                            const formattedDate = `${year}-${month}-${day}`;
+                            const formattedTime = inputDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
                             const data = {
-                                name: x.dataValues.name,
+                                // name: x.dataValues.name,
                                 amount: isDebit ? `${signedAmount}` : `+${signedAmount}`,
-                                debit_credit: y.dataValues.debit_credit
+                                debit_credit: y.dataValues.debit_credit,
+                                time: formattedTime,
+                                date: formattedDate
                             };
                             alldata.push(data)
                         }
