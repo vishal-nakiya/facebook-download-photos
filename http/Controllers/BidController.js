@@ -62,6 +62,16 @@ const BidController = () => {
           date: formattedDate,
         }
         const Bidenter = await Bid.create(data)
+
+        const walletupdatedata = {
+          user_id: req.user.id,
+          debit_credit: 0,
+          amount: parseFloat(req.body.bid_amount),
+          running_balance: parseFloat(WalletBalanceData.dataValues.running_balance) - parseFloat(req.body.bid_amount),
+          comment: "Bid enter"
+        }
+        const walletdatacreate = await WalletBalance.create(walletupdatedata);
+
         res.status(200).json({
           success: true,
           message: 'Data stored successfully',
