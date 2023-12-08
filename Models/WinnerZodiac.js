@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../config/dbconfig");
+const Zodiac = require("./Zodiac");
 
 const WinnerZodiac = sequelize.define("winner_zodiacs", {
     id: { type: Sequelize.INTEGER(11).UNSIGNED, autoIncrement: true, allowNull: false, primaryKey: true, },
@@ -18,5 +19,6 @@ const WinnerZodiac = sequelize.define("winner_zodiacs", {
     }
 );
 
+WinnerZodiac.belongsTo(Zodiac, { foreignKey: "zodiac_id", as: "Zodiacdata" });
 
 module.exports = WinnerZodiac;

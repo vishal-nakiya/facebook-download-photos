@@ -286,7 +286,7 @@ const BidController = () => {
         const minutes = currentDate.getMinutes();
         const seconds = currentDate.getSeconds();
         const year = currentDate.getFullYear();
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
         const day = String(currentDate.getDate()).padStart(2, '0');
 
         const formattedDate = `${year}-${month}-${day}`;
@@ -463,7 +463,62 @@ const BidController = () => {
         res.status(400).json({ message: 'Bad request', success: false });
       }
     },
-    
+    ZodiacWinner: async (req, res) => {
+      try {
+        const currentDate = new Date();
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+
+        const formattedDate = `${year}-${month}-${day}`;
+
+        const Bidwinnerdata = await WinnerZodiac.findAll({
+          where: {
+            deleted_at: null,
+            date: formattedDate
+          },
+          order: [["id", "DESC"]],
+          attributes: ["id", "date", "zodiac_id", "created_at"],
+          include: [
+            {
+              model: Zodiac,
+              as: "Zodiacdata",
+              required: true,
+            }
+          ]
+        });
+
+        if (!Bidwinnerdata.length) {
+          return res.status(400).json({
+            success: false,
+            message: 'No data found!',
+          });
+        }
+
+        const imageBaseUrl = 'http://localhost:8000/images';
+        let alldata = []
+        for (const x of Bidwinnerdata) {
+          const inputDate = new Date(x.dataValues.created_at);
+          const formattedTime = inputDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+          const data = {
+            ZodiacName: x.dataValues.Zodiacdata.dataValues.name,
+            image: `${imageBaseUrl}/${x.dataValues.Zodiacdata.dataValues.image}`,
+            time: formattedTime,
+            date: x.dataValues.date
+          }
+          alldata.push(data)
+        }
+
+        res.status(200).json({
+          success: true,
+          message: 'Data fetched successfully',
+          data: alldata
+        });
+      } catch (error) {
+        console.log(error);
+        res.status(400).json({ message: 'Bad request', success: false });
+      }
+    }
   }
 };
 

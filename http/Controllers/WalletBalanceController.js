@@ -3,6 +3,8 @@ const WalletBalance = require("../../Models/WalletBalance");
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const sequelize = require("../../config/dbconfig");
+const User = require("../../Models/Users");
+const { Op, Sequelize } = require("sequelize");
 
 const WalletBalanceController = () => {
     return {
@@ -90,6 +92,58 @@ const WalletBalanceController = () => {
                     success: true,
                     message: "Wallet data fetch succesfully",
                     data: mydata,
+                })
+            } catch (error) {
+                console.log(error);
+                res.status(500).json({ success: false, message: "Internal Server error", });
+            }
+        },
+        ReadTransaction: async (req, res) => {
+            try {
+                const mydata = await User.findAll({
+                    where: {
+                        deleted_at: null,
+                        status: 1
+                    },
+                    attributes: ["id", "name", "mobile_number"],
+                    include: [
+                        {
+                            model: WalletBalance,
+                            as: "balanceDetails",
+                            attributes: ["id", "amount", "debit_credit"],
+                            required: false,
+                        }
+                    ],
+                    order: [
+                        [Sequelize.literal('`balanceDetails`.`id` DESC')]
+                    ],
+                })
+                if (!mydata.length) return res.status(400).json({
+                    success: false,
+                    message: "No user data found!",
+                });
+                let alldata = []
+                for (const x of mydata) {
+                    if (x.dataValues.balanceDetails.length) {
+                        for (const y of x.dataValues.balanceDetails) {
+                            const isDebit = y.dataValues.debit_credit === 0;
+                            const signedAmount = isDebit ? -y.dataValues.amount : y.dataValues.amount;
+
+                            const data = {
+                                name: x.dataValues.name,
+                                amount: isDebit ? `${signedAmount}` : `+${signedAmount}`,
+                                debit_credit: y.dataValues.debit_credit
+                            };
+                            alldata.push(data)
+                        }
+                    }
+                }
+
+                //FINALLY, Sending data in response
+                res.status(200).json({
+                    success: true,
+                    message: "User data fetch succesfully",
+                    data: alldata,
                 })
             } catch (error) {
                 console.log(error);
