@@ -78,7 +78,7 @@ const zodiacController = () => {
               //   }
               // }
 
-              const imageBaseUrl = 'http://localhost:8000/images';
+              const imageBaseUrl = 'https://api.jugadu.cloud/images';
 
               for (const x of mydata) {
                 if (x.dataValues.image) {

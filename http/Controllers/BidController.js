@@ -370,7 +370,7 @@ const BidController = () => {
           });
         }
         const baseDirectory = process.cwd();
-        const imageBaseUrl = 'http://localhost:8000/images';
+        const imageBaseUrl = 'https://api.jugadu.cloud/images';
 
     for (const x of Bidwinnerdata) {
       if (x.dataValues.image) {
@@ -464,7 +464,7 @@ const BidController = () => {
         }
     
         const baseDirectory = process.cwd();
-        const imageBaseUrl = 'http://localhost:8000/images';
+        const imageBaseUrl = 'https://api.jugadu.cloud/images';
     
         for (const x of Bidwinnerdata) {
           if (x.dataValues.image) {
@@ -548,7 +548,7 @@ const BidController = () => {
           });
         }
 
-        const imageBaseUrl = 'http://localhost:8000/images';
+        const imageBaseUrl = 'https://api.jugadu.cloud/images';
         let alldata = []
         for (const x of Bidwinnerdata) {
           const inputDate = new Date(x.dataValues.created_at);
@@ -608,7 +608,7 @@ const BidController = () => {
           });
         }
 
-        const imageBaseUrl = 'http://localhost:8000/images';
+        const imageBaseUrl = 'https://api.jugadu.cloud/images';
 
         let alldata = []
         for (const x of Bidwinnerdata) {
