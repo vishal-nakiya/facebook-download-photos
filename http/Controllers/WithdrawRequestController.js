@@ -20,9 +20,11 @@ const WithdrawRequestController = () => {
                     return res.status(409).json({ error, success: false });
                 }
 
+                const user_id = req.user.id;
+
                 //creating data object for insertion
                 const data = {
-                    user_id: req.body.user_id,
+                    user_id: user_id,
                     request_amount: req.body.request_amount,
                 }
 
@@ -146,6 +148,35 @@ const WithdrawRequestController = () => {
                 res.status(200).json({
                     success: true,
                     message: "Request reject",
+                })
+            } catch (error) {
+                console.log(error);
+                res.status(500).json({ success: false, message: "Internal Server error", });
+            }
+        },
+        Readrequests: async (req, res) => {
+            try {
+                const mydata = await WithdrawRequest.findAll({
+                    where: {
+                        deleted_at: null,
+                        user_id: req.user.id
+                    },
+                    attributes: {
+                        include: ["id", "request_amount", "accept_decline"],
+                        exclude: ["deleted_at"]
+                    },
+                })
+                if (!mydata.length) return res.status(400).json({
+                    success: false,
+                    message: "No request found!",
+                });     
+                
+
+                //FINALLY, Sending data in response
+                res.status(200).json({
+                    success: true,
+                    message: "Request data fetch succesfully",
+                    data: mydata,
                 })
             } catch (error) {
                 console.log(error);

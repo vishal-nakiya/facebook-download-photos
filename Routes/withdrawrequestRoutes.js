@@ -4,10 +4,7 @@ const WithdrawRequestController = require('../http/Controllers/WithdrawRequestCo
 const authMiddleware = require('../http/middlewares/authMiddleware');
 const { check } = require('express-validator');
 
-Router.post('/request/create', authMiddleware, [
-    check("user_id").exists().withMessage("Enter user_id"),
-],
-    WithdrawRequestController().WithdrawRequest);
+Router.post('/request/create', authMiddleware, WithdrawRequestController().WithdrawRequest);
 
 Router.get('/request/list', authMiddleware,
     WithdrawRequestController().Readrequests);
@@ -18,5 +15,8 @@ Router.post('/request/accept', authMiddleware,
 
 Router.post('/request/reject', authMiddleware,
     WithdrawRequestController().RequestsReject);
+
+Router.get('/userRequestLists', authMiddleware,
+    WithdrawRequestController().Readrequests);
 
 module.exports = Router;
