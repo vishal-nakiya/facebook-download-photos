@@ -85,7 +85,8 @@ const userMasterController = () => {
                         authToken,
                         refreshToken,
                         id: user.dataValues.id,
-                        is_admin: user.dataValues.is_admin
+                        name: user.dataValues.name,
+                        is_admin: user.dataValues.is_admin,
                     }
                 });
 
