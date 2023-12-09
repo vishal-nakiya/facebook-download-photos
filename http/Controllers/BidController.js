@@ -356,10 +356,16 @@ const BidController = () => {
         const imageBaseUrl = 'http://localhost:8000/images';
 
     for (const x of Bidwinnerdata) {
-      const imagePath = path.join(baseDirectory, 'http', 'images', x.dataValues.image);
+      if (x.dataValues.image) {
+        const imagePath = path.join('http', 'images', x.dataValues.image);
 
-      if (fs.existsSync(imagePath)) {
-        x.dataValues.image = `${imageBaseUrl}/${x.dataValues.image}`;
+        if (fs.existsSync(imagePath)) {
+          x.dataValues.image = `${imageBaseUrl}/${x.dataValues.image}`;
+        } else {
+          x.dataValues.image = null;
+        }
+      } else {
+        x.dataValues.image = null;
       }
           x.dataValues.bid_amount = 0
           if (x.dataValues.Biddetails.length) {
@@ -444,10 +450,16 @@ const BidController = () => {
         const imageBaseUrl = 'http://localhost:8000/images';
     
         for (const x of Bidwinnerdata) {
-          const imagePath = path.join(baseDirectory, 'http', 'images', x.dataValues.image);
+          if (x.dataValues.image) {
+            const imagePath = path.join('http', 'images', x.dataValues.image);
     
-          if (fs.existsSync(imagePath)) {
-            x.dataValues.image = `${imageBaseUrl}/${x.dataValues.image}`;
+            if (fs.existsSync(imagePath)) {
+              x.dataValues.image = `${imageBaseUrl}/${x.dataValues.image}`;
+            } else {
+              x.dataValues.image = null;
+            }
+          } else {
+            x.dataValues.image = null;
           }
           x.dataValues.bid_amount = 0;
     
@@ -510,9 +522,11 @@ const BidController = () => {
         for (const x of Bidwinnerdata) {
           const inputDate = new Date(x.dataValues.created_at);
           const formattedTime = inputDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+          const imageData = x.dataValues.Zodiacdata.dataValues.image;
+          const imagePath = imageData ? path.join('http', 'images', imageData) : null;
           const data = {
             ZodiacName: x.dataValues.Zodiacdata.dataValues.name,
-            image: `${imageBaseUrl}/${x.dataValues.Zodiacdata.dataValues.image}`,
+            image: imageData ? (fs.existsSync(imagePath) ? `${imageBaseUrl}/${imageData}` : null) : null,
             time: formattedTime,
             date: x.dataValues.date
           }

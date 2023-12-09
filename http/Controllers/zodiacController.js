@@ -20,21 +20,33 @@ const zodiacController = () => {
                     fs.mkdirSync(uploadDir);
                 }
         
-                const imageFile = req.files.image;
-                const imageName = `${Date.now()}_${Math.floor(Math.random() * 1000)}.png`;
+                // const imageFile = req.files.image;
+                // const imageName = `${Date.now()}_${Math.floor(Math.random() * 1000)}.png`;
         
-                const imagePath = path.join(uploadDir, imageName);
-                imageFile.mv(imagePath);
+                // const imagePath = path.join(uploadDir, imageName);
+                // imageFile.mv(imagePath);
         
-                const mydata = await Zodiac.create({
-                    ...data,
-                    image: imageName,
-                });
+                // const mydata = await Zodiac.create({
+                //     ...data,
+                //     image: imageName,
+                // });
+
+                if (req.files && req.files.image) {
+                  const imageFile = req.files.image;
+                  const imageName = `${Date.now()}_${Math.floor(Math.random() * 1000)}.png`;
+      
+                  const imagePath = path.join(uploadDir, imageName);
+                  imageFile.mv(imagePath);
+      
+                  data.image = imageName;
+                }
+      
+                const mydata = await Zodiac.create(data);
         
                 res.status(200).json({
                     success: true,
                     message: 'Data stored successfully',
-                    data: mydata,
+                    // data: mydata,
                 });
             } catch (error) {
                 console.log(error);
@@ -56,13 +68,29 @@ const zodiacController = () => {
                   "image"
                 ],
               });
+              // const imageBaseUrl = 'http://localhost:8000/images';
+
+              // for (const x of mydata) {
+              //   const imagePath = path.join('http', 'images', x.dataValues.image);
+          
+              //   if (fs.existsSync(imagePath)) {
+              //     x.dataValues.image = `${imageBaseUrl}/${x.dataValues.image}`;
+              //   }
+              // }
+
               const imageBaseUrl = 'http://localhost:8000/images';
 
               for (const x of mydata) {
-                const imagePath = path.join('http', 'images', x.dataValues.image);
+                if (x.dataValues.image) {
+                  const imagePath = path.join('http', 'images', x.dataValues.image);
           
-                if (fs.existsSync(imagePath)) {
-                  x.dataValues.image = `${imageBaseUrl}/${x.dataValues.image}`;
+                  if (fs.existsSync(imagePath)) {
+                    x.dataValues.image = `${imageBaseUrl}/${x.dataValues.image}`;
+                  } else {
+                    x.dataValues.image = null;
+                  }
+                } else {
+                  x.dataValues.image = null;
                 }
               }
       
