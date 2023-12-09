@@ -17,6 +17,6 @@ Router.post('/request/reject', authMiddleware,
     WithdrawRequestController().RequestsReject);
 
 Router.get('/userRequestLists', authMiddleware,
-    WithdrawRequestController().Readrequests);
+    WithdrawRequestController().UserRequestLists);
 
 module.exports = Router;

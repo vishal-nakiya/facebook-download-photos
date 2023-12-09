@@ -36,7 +36,7 @@ const WithdrawRequestController = () => {
                 }
 
                 const Request = await WithdrawRequest.create(data);
-                
+
                 return res.status(200).json({ success: true, message: "Withdraw request Created Succesfully" });
 
             } catch (error) {
@@ -162,7 +162,7 @@ const WithdrawRequestController = () => {
                 res.status(500).json({ success: false, message: "Internal Server error", });
             }
         },
-        Readrequests: async (req, res) => {
+        UserRequestLists: async (req, res) => {
             try {
                 const mydata = await WithdrawRequest.findAll({
                     where: {
