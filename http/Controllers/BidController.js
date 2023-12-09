@@ -583,7 +583,8 @@ const BidController = () => {
               attributes: ["id", "image", "name"],
               required: true,
             }
-          ]
+          ],
+          order: [['created_at', 'DESC']]
         });
 
         if (!Bidwinnerdata.length) {
