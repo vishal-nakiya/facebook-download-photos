@@ -15,4 +15,6 @@ Router.get('/biddingList', authMiddleware, BidController().biddingList);
 
 Router.get('/winner/list', authMiddleware, BidController().ZodiacWinner);
 
+Router.get('/mybidding/list', authMiddleware, BidController().mybiddingList);
+
 module.exports = Router;

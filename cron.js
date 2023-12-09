@@ -6,6 +6,7 @@ const WinnerZodiac = require("./Models/WinnerZodiac");
 const TimeSlot = require("./Models/TimeSlot");
 const WalletBalance = require("./Models/WalletBalance");
 const WinnerManually = require("./Models/WinnerManually");
+const Zodiac = require("./Models/Zodiac");
 
 
 const task1 = cronJob.schedule('*/5 * * * *', async () => {
@@ -100,7 +101,29 @@ const task1 = cronJob.schedule('*/5 * * * *', async () => {
                 }
 
                 const balance = await WalletBalance.create(data);
+                const iswinflag = await Bid.update({ is_win: 1 }, {
+                    where: {
+                        date: formattedDate,
+                        time_slot_id: timeSlotdata.dataValues.id - 1,
+                        zodiac_id: result.dataValues.zodiac_id,
+                        user_id: x.dataValues.user_id
+                    }
+                })
             }
+        } else {
+            const zodiacdata = await Zodiac.findAll({
+                where: {
+                    deleted_at: null
+                },
+                attributes: ["id"]
+            })
+            const randomIndex = Math.floor(Math.random() * zodiacdata.length);
+            data = {
+                time_slot_id: timeSlotdata.dataValues.id - 1,
+                zodiac_id: zodiacdata[randomIndex].id,
+                date: formattedDate,
+            }
+            const result = await WinnerZodiac.create(data)
         }
 
     } catch (error) {

@@ -222,6 +222,23 @@ const BidController = () => {
 
             const balance = await WalletBalance.create(data);
           }
+        } else {
+          const zodiacdata = await Zodiac.findAll({
+            where: {
+              deleted_at: null
+            },
+            attributes: ["id"]
+          })
+          // const randomId = zodiacdata.sort(() => Math.random() - 0.5);
+          const randomIndex = Math.floor(Math.random() * zodiacdata.length);
+
+          // Get the first element (randomly chosen)
+          data = {
+            time_slot_id: timeSlotdata.dataValues.id - 1,
+            zodiac_id: zodiacdata[randomIndex].id,
+            date: formattedDate,
+          }
+          const result = await WinnerZodiac.create(data)
         }
         res.status(200).json({
           success: true,
@@ -542,7 +559,68 @@ const BidController = () => {
         console.log(error);
         res.status(400).json({ message: 'Bad request', success: false });
       }
-    }
+    },
+    mybiddingList: async (req, res) => {
+      try {
+
+        const Bidwinnerdata = await Bid.findAll({
+          where: {
+            deleted_at: null,
+            user_id: req.user.id
+          },
+          attributes: [
+            'zodiac_id',
+            'time_slot_id',
+            'bid_amount',
+            'date',
+            'is_win',
+            'created_at'
+          ],
+          include: [
+            {
+              model: Zodiac,
+              as: "Zodiacdetails",
+              attributes: ["id", "image", "name"],
+              required: true,
+            }
+          ]
+        });
+
+        if (!Bidwinnerdata.length) {
+          return res.status(400).json({
+            success: false,
+            message: 'No data found!',
+          });
+        }
+
+        const imageBaseUrl = 'http://localhost:8000/images';
+
+        let alldata = []
+        for (const x of Bidwinnerdata) {
+          const inputDate = new Date(x.dataValues.created_at);
+          const formattedTime = inputDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+          const imageData = x.dataValues.Zodiacdetails.dataValues.image;
+          const imagePath = imageData ? path.join('http', 'images', imageData) : null;
+          const data = {
+            ZodiacName: x.dataValues.Zodiacdetails.dataValues.name,
+            image: imageData ? (fs.existsSync(imagePath) ? `${imageBaseUrl}/${imageData}` : null) : null,
+            time: formattedTime,
+            date: x.dataValues.date,
+            is_win: x.dataValues.is_win,
+            amount: x.dataValues.bid_amount
+          }
+          alldata.push(data)
+        }
+        res.status(200).json({
+          success: true,
+          message: 'Data fetched successfully',
+          data: alldata
+        });
+      } catch (error) {
+        console.log(error);
+        res.status(400).json({ message: 'Bad request', success: false });
+      }
+    },
   }
 };
 
