@@ -491,7 +491,21 @@ const BidController = () => {
           item.dataValues.is_win = item === lowestBidObject ? 1 : 0;
           delete item.dataValues.Biddetails;
         });
-    
+
+        const checkwinnerdata = await WinnerManually.findOne({
+          where: {
+            time_slot_id: timeSlotdata.dataValues.id,
+            date: formattedDate,
+            deleted_at: null
+          },
+          attributes: ["id", "zodiac_id", "time_slot_id", "date"]
+        });
+        if (checkwinnerdata) {
+          Bidwinnerdata.forEach((item) => {
+            item.dataValues.is_win = item.dataValues.id == checkwinnerdata.dataValues.zodiac_id ? 1 : 0;
+            delete item.dataValues.Biddetails;
+          });
+        }
         res.status(200).json({
           success: true,
           message: 'Data fetched successfully',
