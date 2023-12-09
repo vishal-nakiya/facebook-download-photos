@@ -22,13 +22,21 @@ const WithdrawRequestController = () => {
 
                 const user_id = req.user.id;
 
-                //creating data object for insertion
+                const walletBalance = await WalletBalance.findOne({
+                    where: { user_id: user_id }
+                });
+        
+                if (walletBalance.running_balance < req.body.request_amount) {
+                    return res.status(409).json({ success: false, message: "Insufficient funds in the wallet" });
+                }
+
                 const data = {
                     user_id: user_id,
                     request_amount: req.body.request_amount,
                 }
 
                 const Request = await WithdrawRequest.create(data);
+                
                 return res.status(200).json({ success: true, message: "Withdraw request Created Succesfully" });
 
             } catch (error) {
