@@ -159,6 +159,40 @@ const WalletBalanceController = () => {
                 res.status(500).json({ success: false, message: "Internal Server error", });
             }
         },
+        addUserBalance: async (req, res) => {
+            try {
+
+                const user_id = req.user.id;
+
+                const Running_balance = await WalletBalance.findOne({
+                    where: {
+                        user_id: user_id
+                    },
+                    order: [["id", "DESC"]]
+                })
+                const NewBalance = Running_balance ? +Running_balance.dataValues.running_balance : 0
+                const amount = +req.body.amount;
+
+                if (amount > 2000) {
+                    return res.status(400).json({ success: false, message: "Your amount cannot be greater than 2000" });
+                }
+                
+                const data = {
+                    user_id: user_id,
+                    debit_credit: 1,
+                    amount: amount,
+                    running_balance: NewBalance + amount,
+                    comment: req.body.comment,
+                }
+
+                const balance = await WalletBalance.create(data);
+                return res.status(200).json({ success: true, message: "Balance added succesfully" });
+
+            } catch (error) {
+                console.log(error);
+                res.status(400).json({ message: "Internal server error", success: false });
+            }
+        },
     }
 };
 
