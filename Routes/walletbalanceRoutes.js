@@ -16,4 +16,6 @@ Router.get('/total/bid/user', authMiddleware, WalletBalanceController().Readpert
 
 Router.get('/user/transaction', authMiddleware, WalletBalanceController().ReadTransaction);
 
+Router.post('/addUserBalance', authMiddleware, WalletBalanceController().addUserBalance);
+
 module.exports = Router;
