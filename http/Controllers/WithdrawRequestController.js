@@ -23,7 +23,8 @@ const WithdrawRequestController = () => {
                 const user_id = req.user.id;
 
                 const walletBalance = await WalletBalance.findOne({
-                    where: { user_id: user_id }
+                    where: { user_id: user_id },
+                    order: [["id", "DESC"]]
                 });
         
                 if (walletBalance.running_balance < req.body.request_amount) {
@@ -108,6 +109,11 @@ const WithdrawRequestController = () => {
                     success: false,
                     message: "No wallet data found!",
                 });
+                
+                if (walletdataget.running_balance < WithdrawRequestData.dataValues.request_amount) {
+                    return res.status(409).json({ success: false, message: "Insufficient funds in the wallet" });
+                }
+
                 const data = {
                     user_id: WithdrawRequestData.dataValues.user_id,
                     debit_credit: 0,

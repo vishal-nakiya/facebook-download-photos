@@ -10,7 +10,7 @@ Router.get('/request/list', authMiddleware,
     WithdrawRequestController().Readrequests);
 
 
-Router.post('/request/accept', authMiddleware,
+Router.post('/request/accept', 
     WithdrawRequestController().RequestsAccept);
 
 Router.post('/request/reject', authMiddleware,
