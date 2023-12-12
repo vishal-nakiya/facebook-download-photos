@@ -108,5 +108,6 @@ Router.put('/update/:id', authMiddleware, [
 ], userController().update);
 Router.get("/readAll", authMiddleware, userController().readAll)
 Router.get("/readOne/:id", authMiddleware, userController().readOne)
+Router.get("/update/:id", authMiddleware, userController().UserUpdate)
 
 module.exports = Router;

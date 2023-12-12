@@ -216,6 +216,44 @@ const userMasterController = () => {
                 res.status(500).json({ success: false, message: "Internal Server error", });
             }
         },
+        UserUpdate: async (req, res) => {
+            try {
+                // Checking validation errors, using express-validator
+                const errors = validationResult(req);
+                if (!errors.isEmpty()) {
+                    const error = errors.array().map((x) => {
+                        return {
+                            field: x.param,
+                            message: x.msg
+                        };
+                    })
+                    return res.status(409).json({ error, success: false });
+                }
+                //creating data object for insertion
+                const { name, password, mobile_number, email, auth_token, refresh_token, referral_code } = req.body
+
+                const hashedPassword = await bcrypt.hash(password, 10);
+
+                const data = {
+                    name,
+                    password: hashedPassword,
+                    mobile_number,
+                    email,
+                    referral_code,
+                    status: req.body.status,
+                    // is_admin: 0
+                }
+
+                const user = await User.update({ data }, {
+                    where: { id: req.params.id }
+                });
+                return res.status(200).json({ success: true, message: "User update Succesfully" });
+
+            } catch (error) {
+                console.log(error);
+                res.status(500).json({ success: false, message: "Internal Server error", });
+            }
+        },
     }
 };
 
