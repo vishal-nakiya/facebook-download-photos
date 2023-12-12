@@ -43,7 +43,7 @@ Router.post('/signup', [
             }
         })
     }),
-    body("password").trim().isLength({ min: 6 }).withMessage('Please enter minimum 6 charcter password'),
+    body("password").trim().isLength({ min: 6 }).withMessage('Please enter minimum 6 character password'),
 ], userController().UserSignup);
 
 Router.post("/login", [
@@ -107,7 +107,9 @@ Router.put('/update/:id', authMiddleware, [
     // }),
 ], userController().update);
 Router.get("/readAll", authMiddleware, userController().readAll)
-Router.get("/readOne/:id", authMiddleware, userController().readOne)
-Router.get("/update/:id", authMiddleware, userController().UserUpdate)
+Router.get("/readMyProfile", authMiddleware, userController().myProfileRead)
+Router.post("/newPassword", [
+    body("new_password").trim().isLength({ min: 6 }).withMessage('Please enter minimum 6 character password'),
+], authMiddleware, userController().myProfilePassword)
 
 module.exports = Router;

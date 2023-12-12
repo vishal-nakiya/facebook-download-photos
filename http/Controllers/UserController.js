@@ -192,67 +192,68 @@ const userMasterController = () => {
                 res.status(500).json({ success: false, message: "Internal Server error", });
             }
         },
-        readOne: async (req, res) => {
+        myProfileRead: async (req, res) => {
             try {
-                const mydata = await User.findOne({
+                const mydata = await User.findAll({
                     where: {
                         deleted_at: null,
-                        id: req.params.id
+                        id: req.user.id
                     },
-                    attributes: ["id", "name", "mobile_number", "email", "referral_code", "referral_points", "status"]
+                    attributes: ["id", "name", "mobile_number", "email", "referral_code"]
                 })
                 if (!mydata) return res.status(400).json({
                     success: false,
-                    message: "No user data found!",
+                    message: "No data found",
                 });;
                 //FINALLY, Sending data in response
                 res.status(200).json({
                     success: true,
-                    message: "User data fetch succesfully",
+                    message: "My profile data fetched successfully",
                     data: mydata,
                 })
             } catch (error) {
                 console.log(error);
-                res.status(500).json({ success: false, message: "Internal Server error", });
+                res.status(500).json({ success: false, message: "Internal server error", });
             }
         },
-        UserUpdate: async (req, res) => {
+        myProfilePassword: async (req, res) => {
             try {
-                // Checking validation errors, using express-validator
                 const errors = validationResult(req);
                 if (!errors.isEmpty()) {
-                    const error = errors.array().map((x) => {
-                        return {
-                            field: x.param,
-                            message: x.msg
-                        };
-                    })
-                    return res.status(409).json({ error, success: false });
+                  const error = errors.array().map((x) => {
+                    return {
+                      field: x.param,
+                      message: x.msg,
+                    };
+                  });
+                  return res.status(400).json({ error, success: false });
                 }
-                //creating data object for insertion
-                const { name, password, mobile_number, email, auth_token, refresh_token, referral_code } = req.body
+            
+                const { old_password, new_password } = req.body;
+            
+                const user = await User.findOne({ where : { id: req.user.id }});
+            
+                const isPasswordValid = await bcrypt.compare(old_password, user.password);
 
-                const hashedPassword = await bcrypt.hash(password, 10);
+                if (!isPasswordValid) {
+                    return res.status(401).json({ success: false, message: 'Old password is incorrect' });
+                  }
 
-                const data = {
-                    name,
-                    password: hashedPassword,
-                    mobile_number,
-                    email,
-                    referral_code,
-                    status: req.body.status,
-                    // is_admin: 0
-                }
+                const isNewPasswordSameAsOld = await bcrypt.compare(new_password, user.password);
 
-                const user = await User.update({ data }, {
-                    where: { id: req.params.id }
-                });
-                return res.status(200).json({ success: true, message: "User update Succesfully" });
-
-            } catch (error) {
-                console.log(error);
-                res.status(500).json({ success: false, message: "Internal Server error", });
-            }
+                if (isNewPasswordSameAsOld) {
+                    return res.status(400).json({ success: false, message: 'New password must be different from the old password' });
+                  }
+            
+                const hashedNewPassword = await bcrypt.hash(new_password, 10);
+        
+                await user.update({ password: hashedNewPassword });
+            
+                return res.status(200).json({ success: true, message: 'Password changed successfully' });
+              } catch (error) {
+                console.error(error);
+                res.status(500).json({ success: false, message: 'Internal server error' });
+              }
         },
     }
 };
