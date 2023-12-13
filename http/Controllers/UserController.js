@@ -43,22 +43,24 @@ const userMasterController = () => {
                         getRandomChar(uppercaseChars + lowercaseChars + numericChars),
                     ].join('');
                 } while (await User.findOne({ where: { referral_code: referralCode } }));
-
-                const findreferalluser = await User.findOne({
-                    where: {
-                        referral_code: user_referral_code,
-                        deleted_at: null,
-                        status: 1
-                    },
-                    attributes: ["id"]
-                })
-                if (user_referral_code && !findreferalluser) {
-                    return res.status(400).json({
-                        success: false,
-                        message: 'Please enter valid referral code!'
+                
+                let findreferalluser
+                if (user_referral_code) {
+                     findreferalluser = await User.findOne({
+                        where: {
+                            referral_code: user_referral_code,
+                            deleted_at: null,
+                            status: 1
+                        },
+                        attributes: ["id"]
                     })
+                    if (user_referral_code && !findreferalluser) {
+                        return res.status(400).json({
+                            success: false,
+                            message: 'Please enter valid referral code!'
+                        })
+                    }
                 }
-
                 const data = {
                     name,
                     password: hashedPassword,
