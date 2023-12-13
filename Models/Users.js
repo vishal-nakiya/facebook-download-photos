@@ -12,6 +12,7 @@ const User = sequelize.define("users", {
     auth_token: { type: Sequelize.STRING(10000), allowNull: this.truncate },
     refresh_token: { type: Sequelize.STRING(10000), allowNull: this.truncate },
     referral_code: { type:Sequelize.STRING, allowNull:true },
+    referral_user_id: { type: Sequelize.INTEGER(11), allowNull:true },
     referral_points: { type: Sequelize.DECIMAL(10, 2), allowNull:true, defaultValue:0 },
     status: { type: Sequelize.TINYINT, allowNull: false,  defaultValue: 1 } ,
     deleted_at: { type: Sequelize.STRING, allowNull: true },

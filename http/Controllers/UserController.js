@@ -21,9 +21,43 @@ const userMasterController = () => {
                     return res.status(409).json({ error, success: false });
                 }
                 //creating data object for insertion
-                const { name, password, mobile_number, email, auth_token, refresh_token, referral_code } = req.body
+                const { name, password, mobile_number, email, auth_token, refresh_token, referral_code, user_referral_code } = req.body
 
                 const hashedPassword = await bcrypt.hash(password, 10);
+
+                const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz';
+                const numericChars = '0123456789';
+
+                const getRandomChar = (charSet) => charSet[Math.floor(Math.random() * charSet.length)];
+
+                let referralCode;
+
+                do {
+                    referralCode = [
+                        getRandomChar(uppercaseChars),
+                        getRandomChar(lowercaseChars),
+                        getRandomChar(numericChars),
+                        getRandomChar(uppercaseChars + lowercaseChars + numericChars),
+                        getRandomChar(uppercaseChars + lowercaseChars + numericChars),
+                        getRandomChar(uppercaseChars + lowercaseChars + numericChars),
+                    ].join('');
+                } while (await User.findOne({ where: { referral_code: referralCode } }));
+
+                const findreferalluser = await User.findOne({
+                    where: {
+                        referral_code: user_referral_code,
+                        deleted_at: null,
+                        status: 1
+                    },
+                    attributes: ["id"]
+                })
+                if (user_referral_code && !findreferalluser) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Please enter valid referral code!'
+                    })
+                }
 
                 const data = {
                     name,
@@ -34,7 +68,9 @@ const userMasterController = () => {
                     refresh_token,
                     referral_code,
                     status: 1,
-                    is_admin: 0
+                    is_admin: 0,
+                    referral_code: referralCode,
+                    referral_user_id: findreferalluser ? findreferalluser.dataValues.id : null
                 }
 
                 const user = await User.create(data);
@@ -254,6 +290,31 @@ const userMasterController = () => {
                 console.error(error);
                 res.status(500).json({ success: false, message: 'Internal server error' });
               }
+        },
+        readreferralUser: async (req, res) => {
+            try {
+                const mydata = await User.findAll({
+                    where: {
+                        deleted_at: null,
+                        referral_user_id: req.user.id
+                    },
+                    attributes: ["id", "name", "mobile_number", "email", "referral_code", "referral_points", "status"],
+                })
+                if (!mydata.length) return res.status(400).json({
+                    success: false,
+                    message: "No user data found!",
+                });
+
+                //FINALLY, Sending data in response
+                res.status(200).json({
+                    success: true,
+                    message: "User data fetch succesfully",
+                    data: mydata,
+                })
+            } catch (error) {
+                console.log(error);
+                res.status(500).json({ success: false, message: "Internal Server error", });
+            }
         },
     }
 };

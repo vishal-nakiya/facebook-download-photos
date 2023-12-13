@@ -8,6 +8,19 @@ const { Op } = require('sequelize');
 
 Router.post('/signup', [
     body("name").trim().isLength({ min: 1 }).withMessage('Please enter full name'),
+    body('user_referral_code')
+        .custom((value, { req }) => {
+            // Check if the field has a value before applying length validation
+            if (value) {
+                // Apply length validation if there is a value
+                return req.body.user_referral_code.trim().length === 6;
+
+            }
+          
+            // Return true if the field is empty (validation is not required in this case)
+            return true;
+        })
+        .withMessage('Please enter referral code with 6 digits'),
     body("mobile_number").custom((value) => {
         if (!value) {
             return Promise.reject("Enter phone number")
@@ -111,5 +124,8 @@ Router.get("/readMyProfile", authMiddleware, userController().myProfileRead)
 Router.post("/newPassword", [
     body("new_password").trim().isLength({ min: 6 }).withMessage('Please enter minimum 6 character password'),
 ], authMiddleware, userController().myProfilePassword)
+
+Router.get("/referralUsers/listing", authMiddleware, userController().readreferralUser)
+
 
 module.exports = Router;
