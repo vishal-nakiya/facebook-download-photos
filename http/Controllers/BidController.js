@@ -156,6 +156,19 @@ const BidController = () => {
           },
           attributes: ["id", "start_time", "end_time"]
         })
+        const Bidwinnerdatacheckdata = await Bid.findAll({
+          where: {
+            deleted_at: null,
+            date: formattedDate,
+            time_slot_id: timeSlotdata.dataValues.id - 1
+          },
+          attributes: [
+            "id",
+            'zodiac_id',
+            'time_slot_id',
+            'date'
+          ],
+        })
         const Bidwinnerdata = await Bid.findAll({
           where: {
             deleted_at: null,
@@ -173,54 +186,92 @@ const BidController = () => {
           limit: 1
         })
         if (Bidwinnerdata.length) {
-          const balance = await WinnerManually.findOne({
-            where: {
-              time_slot_id: Bidwinnerdata[0].dataValues.time_slot_id,
-              date: Bidwinnerdata[0].dataValues.date,
-              deleted_at: null
-            },
-            attributes: ["zodiac_id", "time_slot_id", "id"]
-          });
-          data = {
-            time_slot_id: Bidwinnerdata[0].dataValues.time_slot_id,
-            zodiac_id: balance ? balance.dataValues.zodiac_id : Bidwinnerdata[0].dataValues.zodiac_id,
-            date: Bidwinnerdata[0].dataValues.date,
-          }
-          const result = await WinnerZodiac.create(data)
-          const Bidupdate = await Bid.findAll({
-            where: {
-              deleted_at: null,
-              date: formattedDate,
-              time_slot_id: timeSlotdata.dataValues.id - 1,
-              zodiac_id: result.dataValues.zodiac_id,
-            },
-            attributes: [
-              'zodiac_id',
-              'time_slot_id',
-              [Sequelize.literal('bid_amount* 5'), 'multiplied_bid_amount'],
-              'date',
-              'user_id'
-            ],
-          })
-
-          for (const x of Bidupdate) {
-            const Running_balance = await WalletBalance.findOne({
+          if (Bidwinnerdatacheckdata.length > 1) {
+            const balance = await WinnerManually.findOne({
               where: {
-                user_id: x.dataValues.user_id
+                time_slot_id: Bidwinnerdata[0].dataValues.time_slot_id,
+                date: Bidwinnerdata[0].dataValues.date,
+                deleted_at: null
               },
-              order: [["id", "DESC"]]
-            })
-            const NewBalance = Running_balance ? +Running_balance.dataValues.running_balance : 0
-            //creating data object for insertion
-            const data = {
-              user_id: x.dataValues.user_id,
-              debit_credit: 1,
-              amount: x.dataValues.multiplied_bid_amount,
-              running_balance: NewBalance + +x.dataValues.multiplied_bid_amount,
-              comment: "Winning bid",
+              attributes: ["zodiac_id", "time_slot_id", "id"]
+            });
+            data = {
+              time_slot_id: Bidwinnerdata[0].dataValues.time_slot_id,
+              zodiac_id: balance ? balance.dataValues.zodiac_id : Bidwinnerdata[0].dataValues.zodiac_id,
+              date: Bidwinnerdata[0].dataValues.date,
             }
+            const result = await WinnerZodiac.create(data)
+            const Bidupdate = await Bid.findAll({
+              where: {
+                deleted_at: null,
+                date: formattedDate,
+                time_slot_id: timeSlotdata.dataValues.id - 1,
+                zodiac_id: result.dataValues.zodiac_id,
+              },
+              attributes: [
+                'zodiac_id',
+                'time_slot_id',
+                [Sequelize.literal('bid_amount* 5'), 'multiplied_bid_amount'],
+                'date',
+                'user_id'
+              ],
+            })
 
-            const balance = await WalletBalance.create(data);
+            for (const x of Bidupdate) {
+              const Running_balance = await WalletBalance.findOne({
+                where: {
+                  user_id: x.dataValues.user_id
+                },
+                order: [["id", "DESC"]]
+              })
+              const NewBalance = Running_balance ? +Running_balance.dataValues.running_balance : 0
+              //creating data object for insertion
+              const data = {
+                user_id: x.dataValues.user_id,
+                debit_credit: 1,
+                amount: x.dataValues.multiplied_bid_amount,
+                running_balance: NewBalance + +x.dataValues.multiplied_bid_amount,
+                comment: "Winning bid",
+              }
+
+              const balance = await WalletBalance.create(data);
+              const iswinflag = await Bid.update({ is_win: 1 }, {
+                where: {
+                  date: formattedDate,
+                  time_slot_id: timeSlotdata.dataValues.id - 1,
+                  zodiac_id: result.dataValues.zodiac_id,
+                  user_id: x.dataValues.user_id
+                }
+              })
+            }
+          } else {
+            const Bidwinnerdatacheckdata = await Bid.findAll({
+              where: {
+                deleted_at: null,
+                date: formattedDate,
+                time_slot_id: timeSlotdata.dataValues.id - 1
+              },
+              attributes: [
+                "id",
+                'zodiac_id',
+                'time_slot_id',
+                'date'
+              ],
+            })
+            const zodiacdata = await Zodiac.findAll({
+              where: {
+                deleted_at: null,
+                id: { [Op.ne]: Bidwinnerdatacheckdata[0].dataValues.zodiac_id }
+              },
+              attributes: ["id"]
+            })
+            const randomIndex = Math.floor(Math.random() * zodiacdata.length);
+            data = {
+              time_slot_id: timeSlotdata.dataValues.id - 1,
+              zodiac_id: zodiacdata[randomIndex].id,
+              date: formattedDate,
+            }
+            const result = await WinnerZodiac.create(data)
           }
         } else {
           const zodiacdata = await Zodiac.findAll({
@@ -229,10 +280,7 @@ const BidController = () => {
             },
             attributes: ["id"]
           })
-          // const randomId = zodiacdata.sort(() => Math.random() - 0.5);
           const randomIndex = Math.floor(Math.random() * zodiacdata.length);
-
-          // Get the first element (randomly chosen)
           data = {
             time_slot_id: timeSlotdata.dataValues.id - 1,
             zodiac_id: zodiacdata[randomIndex].id,

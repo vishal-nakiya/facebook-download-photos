@@ -14,7 +14,8 @@ const sequelize = new Sequelize(
             acquire: 50000,
             idle: 50000
         },
-        logging: process.env.NODE_ENV == 'development' ? true : true
+        logging: process.env.NODE_ENV == 'development' ? true : true,
+        timezone: '+05:30',
     }
 );
 module.exports = sequelize;
