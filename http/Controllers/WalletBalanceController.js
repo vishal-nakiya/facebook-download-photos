@@ -135,7 +135,7 @@ const WalletBalanceController = () => {
                             const day = String(inputDate.getDate()).padStart(2, '0');
 
                             const formattedDate = `${year}-${month}-${day}`;
-                            const formattedTime = inputDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+                            const formattedTime = inputDate.toLocaleTimeString('en-IN', { hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Kolkata' });
                             const data = {
                                 // name: x.dataValues.name,
                                 amount: isDebit ? `${signedAmount}` : `+${signedAmount}`,

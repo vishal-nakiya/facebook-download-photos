@@ -600,7 +600,7 @@ const BidController = () => {
         let alldata = []
         for (const x of Bidwinnerdata) {
           const inputDate = new Date(x.dataValues.created_at);
-          const formattedTime = inputDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+          const formattedTime = inputDate.toLocaleTimeString('en-IN', { hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Kolkata' });
           const imageData = x.dataValues.Zodiacdata.dataValues.image;
           const imagePath = imageData ? path.join('http', 'images', imageData) : null;
           const data = {
@@ -661,7 +661,7 @@ const BidController = () => {
         let alldata = []
         for (const x of Bidwinnerdata) {
           const inputDate = new Date(x.dataValues.created_at);
-          const formattedTime = inputDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+          const formattedTime = inputDate.toLocaleTimeString('en-IN', { hour: 'numeric', minute: 'numeric', hour12: true, timeZone: 'Asia/Kolkata' });
           const imageData = x.dataValues.Zodiacdetails.dataValues.image;
           const imagePath = imageData ? path.join('http', 'images', imageData) : null;
           const data = {
