@@ -33,7 +33,7 @@ const WithdrawRequestController = () => {
                     return res.status(409).json({ success: false, message: "Minimum withdrawal amount is 500" });
                 }
         
-                if (walletBalance.running_balance < req.body.request_amount) {
+                if (walletBalance.running_balance < requestAmount) {
                     return res.status(409).json({ success: false, message: "Insufficient funds in the wallet" });
                 }
 
