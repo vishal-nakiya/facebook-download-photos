@@ -11,6 +11,14 @@ const BidController = () => {
   return {
     AddBidAmount: async (req, res) => {
       try {
+
+        if (req.body.bid_amount < 10) {
+          return res.status(400).json({
+            success: false,
+            message: "Minimum bid amount is 10",
+          });
+        }
+
         const WalletBalanceData = await WalletBalance.findOne({
           where: {
             user_id: req.user.id
@@ -211,7 +219,7 @@ const BidController = () => {
               attributes: [
                 'zodiac_id',
                 'time_slot_id',
-                [Sequelize.literal('bid_amount* 5'), 'multiplied_bid_amount'],
+                [Sequelize.literal('bid_amount* 10'), 'multiplied_bid_amount'],
                 'date',
                 'user_id'
               ],

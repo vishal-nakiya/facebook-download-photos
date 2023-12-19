@@ -26,6 +26,12 @@ const WithdrawRequestController = () => {
                     where: { user_id: user_id },
                     order: [["id", "DESC"]]
                 });
+
+                const requestAmount = req.body.request_amount;
+
+                if (requestAmount < 500) {
+                    return res.status(409).json({ success: false, message: "Minimum withdrawal amount is 500" });
+                }
         
                 if (walletBalance.running_balance < req.body.request_amount) {
                     return res.status(409).json({ success: false, message: "Insufficient funds in the wallet" });
@@ -33,7 +39,7 @@ const WithdrawRequestController = () => {
 
                 const data = {
                     user_id: user_id,
-                    request_amount: req.body.request_amount,
+                    request_amount: requestAmount,
                 }
 
                 const Request = await WithdrawRequest.create(data);

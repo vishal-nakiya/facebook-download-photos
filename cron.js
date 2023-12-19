@@ -91,7 +91,7 @@ const task1 = cronJob.schedule('*/5 * * * *', async () => {
                     attributes: [
                         'zodiac_id',
                         'time_slot_id',
-                        [Sequelize.literal('bid_amount* 5'), 'multiplied_bid_amount'],
+                        [Sequelize.literal('bid_amount* 10'), 'multiplied_bid_amount'],
                         'date',
                         'user_id'
                     ],
