@@ -162,6 +162,14 @@ const task1 = cronJob.schedule('*/5 * * * *', async () => {
                 const result = await WinnerZodiac.create(data)
             }
         } else {
+            const balance = await WinnerManually.findOne({
+                where: {
+                    time_slot_id: timeSlotdata.dataValues.id - 1,
+                    date: formattedDate,
+                    deleted_at: null
+                },
+                attributes: ["zodiac_id", "time_slot_id", "id"]
+            });
             const zodiacdata = await Zodiac.findAll({
                 where: {
                     deleted_at: null
@@ -171,7 +179,7 @@ const task1 = cronJob.schedule('*/5 * * * *', async () => {
             const randomIndex = Math.floor(Math.random() * zodiacdata.length);
             data = {
                 time_slot_id: timeSlotdata.dataValues.id - 1,
-                zodiac_id: zodiacdata[randomIndex].id,
+                zodiac_id: balance ? balance.dataValues.zodiac_id : zodiacdata[randomIndex].id,
                 date: formattedDate,
             }
             const result = await WinnerZodiac.create(data)

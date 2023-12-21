@@ -293,7 +293,7 @@ const BidController = () => {
         } else {
           const balance = await WinnerManually.findOne({
             where: {
-              time_slot_id: timeSlotdata.dataValues.id - 1,
+              time_slot_id: timeSlotdata.dataValues.id-1,
               date: formattedDate,
               deleted_at: null
             },
