@@ -7,6 +7,9 @@ const WithdrawRequest = sequelize.define("withdraw_requests", {
     user_id: { type: Sequelize.INTEGER(11), allowNull: true },
     request_amount: { type: Sequelize.DECIMAL(15, 2), allowNull: true },
     accept_decline: { type: Sequelize.TINYINT(4), allowNull: true },
+    account_holder_name: { type: Sequelize.STRING(150), allowNull: true },
+    account_number: { type: Sequelize.STRING(50), allowNull: true },
+    ifsc_code: { type: Sequelize.STRING(40), allowNull: true },
     deleted_at: { type: Sequelize.DATE, allowNull: true },
 
 },
