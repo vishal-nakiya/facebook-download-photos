@@ -40,6 +40,9 @@ const WithdrawRequestController = () => {
                 const data = {
                     user_id: user_id,
                     request_amount: requestAmount,
+                    account_holder_name: req.body.account_holder_name,
+                    account_number: req.body.account_number,
+                    ifsc_code: req.body.ifsc_code,
                 }
 
                 const Request = await WithdrawRequest.create(data);
