@@ -190,7 +190,7 @@ const BidController = () => {
             [Sequelize.literal('SUM(bid_amount)'), 'total_bid_amount'],
             'date'
           ],
-          order: [[Sequelize.literal('total_bid_amount'), 'DESC']],
+          order: [[Sequelize.literal('total_bid_amount'), 'ASC']],
           limit: 1
         })
 
