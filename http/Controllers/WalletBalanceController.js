@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const sequelize = require("../../config/dbconfig");
 const User = require("../../Models/Users");
 const { Op, Sequelize } = require("sequelize");
+const UPI = require("../../Models/UPI");
 
 const WalletBalanceController = () => {
     return {
@@ -187,6 +188,48 @@ const WalletBalanceController = () => {
 
                 const balance = await WalletBalance.create(data);
                 return res.status(200).json({ success: true, message: "Balance added succesfully" });
+
+            } catch (error) {
+                console.log(error);
+                res.status(400).json({ message: "Internal server error", success: false });
+            }
+        },
+        addUPIids: async (req, res) => {
+            try {
+                const authcheck = User.findOne({
+                    where: {
+                        id: req.user.id,
+                        deleted_at: null,
+                        is_admin: 1
+                    }
+                })
+                if (!authcheck) {
+                    return res.status(400).json({ success: false, message: "You are unauthorised to access this page,please login with admin" });
+                }
+                if (!req.body.upi_id.trim()) {
+                    return res.status(400).json({ success: false, message: "Please add UPI id!" });
+                }
+                const upidata = await UPI.findOne({
+                })
+                if (upidata) {
+                    await UPI.update({ upi_id: req.body.upi_id.trim(), merchant_name: req.body.merchant_name })
+                } else {
+                    await UPI.create({ upi_id: req.body.upi_id.trim(), merchant_name: req.body.merchant_name })
+                }
+
+                return res.status(200).json({ success: true, message: "UPI added succesfully" });
+
+            } catch (error) {
+                console.log(error);
+                res.status(400).json({ message: "Internal server error", success: false });
+            }
+        },
+        UPIlisting: async (req, res) => {
+            try {
+                const upidata = await UPI.findAll({
+                })
+
+                return res.status(200).json({ success: true, message: "UPI data fetched succesfully", data: upidata });
 
             } catch (error) {
                 console.log(error);

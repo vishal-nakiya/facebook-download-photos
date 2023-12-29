@@ -18,4 +18,8 @@ Router.get('/user/transaction', authMiddleware, WalletBalanceController().ReadTr
 
 Router.post('/addUserBalance', authMiddleware, WalletBalanceController().addUserBalance);
 
+Router.post('/addUPI/change', authMiddleware, WalletBalanceController().addUPIids);
+
+Router.get('/upi/listing', authMiddleware, WalletBalanceController().UPIlisting);
+
 module.exports = Router;
