@@ -160,6 +160,49 @@ const task1 = cronJob.schedule('*/5 * * * *', async () => {
                     date: formattedDate,
                 }
                 const result = await WinnerZodiac.create(data)
+                const Bidupdate = await Bid.findAll({
+                    where: {
+                        deleted_at: null,
+                        date: formattedDate,
+                        time_slot_id: timeSlotdata.dataValues.id - 1,
+                        zodiac_id: result.dataValues.zodiac_id,
+                    },
+                    attributes: [
+                        'zodiac_id',
+                        'time_slot_id',
+                        [Sequelize.literal('bid_amount* 10'), 'multiplied_bid_amount'],
+                        'date',
+                        'user_id'
+                    ],
+                })
+
+                for (const x of Bidupdate) {
+                    const Running_balance = await WalletBalance.findOne({
+                        where: {
+                            user_id: x.dataValues.user_id
+                        },
+                        order: [["id", "DESC"]]
+                    })
+                    const NewBalance = Running_balance ? +Running_balance.dataValues.running_balance : 0
+                    //creating data object for insertion
+                    const data = {
+                        user_id: x.dataValues.user_id,
+                        debit_credit: 1,
+                        amount: x.dataValues.multiplied_bid_amount,
+                        running_balance: NewBalance + +x.dataValues.multiplied_bid_amount,
+                        comment: "Winning bid",
+                    }
+
+                    const balance = await WalletBalance.create(data);
+                    const iswinflag = await Bid.update({ is_win: 1 }, {
+                        where: {
+                            date: formattedDate,
+                            time_slot_id: timeSlotdata.dataValues.id - 1,
+                            zodiac_id: result.dataValues.zodiac_id,
+                            user_id: x.dataValues.user_id
+                        }
+                    })
+                }
             }
         } else {
             const balance = await WinnerManually.findOne({
@@ -183,6 +226,49 @@ const task1 = cronJob.schedule('*/5 * * * *', async () => {
                 date: formattedDate,
             }
             const result = await WinnerZodiac.create(data)
+            const Bidupdate = await Bid.findAll({
+                where: {
+                    deleted_at: null,
+                    date: formattedDate,
+                    time_slot_id: timeSlotdata.dataValues.id - 1,
+                    zodiac_id: result.dataValues.zodiac_id,
+                },
+                attributes: [
+                    'zodiac_id',
+                    'time_slot_id',
+                    [Sequelize.literal('bid_amount* 10'), 'multiplied_bid_amount'],
+                    'date',
+                    'user_id'
+                ],
+            })
+
+            for (const x of Bidupdate) {
+                const Running_balance = await WalletBalance.findOne({
+                    where: {
+                        user_id: x.dataValues.user_id
+                    },
+                    order: [["id", "DESC"]]
+                })
+                const NewBalance = Running_balance ? +Running_balance.dataValues.running_balance : 0
+                //creating data object for insertion
+                const data = {
+                    user_id: x.dataValues.user_id,
+                    debit_credit: 1,
+                    amount: x.dataValues.multiplied_bid_amount,
+                    running_balance: NewBalance + +x.dataValues.multiplied_bid_amount,
+                    comment: "Winning bid",
+                }
+
+                const balance = await WalletBalance.create(data);
+                const iswinflag = await Bid.update({ is_win: 1 }, {
+                    where: {
+                        date: formattedDate,
+                        time_slot_id: timeSlotdata.dataValues.id - 1,
+                        zodiac_id: result.dataValues.zodiac_id,
+                        user_id: x.dataValues.user_id
+                    }
+                })
+            }
         }
 
     } catch (error) {
