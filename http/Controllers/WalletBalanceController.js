@@ -226,7 +226,7 @@ const WalletBalanceController = () => {
         },
         UPIlisting: async (req, res) => {
             try {
-                const upidata = await UPI.findAll({
+                const upidata = await UPI.findOne({
                 })
 
                 return res.status(200).json({ success: true, message: "UPI data fetched succesfully", data: upidata });
